@@ -4,9 +4,11 @@ import { getPokemons } from "@/api/pokemon/getPokemon";
 import PokemonCard from "@/components/PokemonCard";
 import { PokemonListType } from "@/types/PokemonListType";
 import { Link } from "expo-router";
+import {SortOption} from "@/components/SortPopup";
 
 export default function PokemonList(props: {
-    searchValue: string
+    searchValue: string;
+    sortBy: SortOption;
 }) {
     const [pokemonList, setPokemonList] = useState<PokemonListType[]>([]);
     const [allPokemonsList, setAllPokemonsList] = useState<PokemonListType[]>([]);
@@ -47,13 +49,20 @@ export default function PokemonList(props: {
     }, []);
 
     const displayedList = useMemo(() => {
-        if (props.searchValue.trim() === "") {
-            return pokemonList;
+        let list = props.searchValue.trim() === ""
+            ? pokemonList
+            : allPokemonsList.filter(p =>
+                p.name.toLowerCase().includes(props.searchValue.trim().toLowerCase())
+            );
+
+        if (props.sortBy === "name") {
+            list = [...list].sort((a, b) => a.name.localeCompare(b.name));
+        } else {
+            list = [...list].sort((a, b) => Number(getIdFromUrl(a.url)) - Number(getIdFromUrl(b.url)));
         }
-        return allPokemonsList.filter(p =>
-            p.name.toLowerCase().includes(props.searchValue.trim().toLowerCase())
-        );
-    }, [props.searchValue, pokemonList]);
+
+        return list;
+    }, [props.searchValue, pokemonList, allPokemonsList, props.sortBy]);
 
     return (
         <View style={styles.container}>

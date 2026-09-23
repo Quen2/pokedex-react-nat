@@ -3,11 +3,16 @@ import Search from "../../assets/Search.svg";
 import Sort from "../../assets/Sort.svg";
 import {useState} from "react";
 
-export default function SearchBar(props: {
-    searchValue: string,
-    onSearch: (value: string) => void;
-}) {
+import SortPopup, { SortOption } from "@/components/SortPopup";
 
+export default function SearchBar(props: {
+    searchValue: string;
+    onSearch: (value: string) => void;
+    isSorting: boolean;
+    setIsSorting: (value: boolean) => void;
+    sortBy: SortOption;
+    setSortBy: (value: SortOption) => void;
+}) {
     return (
         <View style={styles.container}>
             <View style={styles.searchInput}>
@@ -16,15 +21,28 @@ export default function SearchBar(props: {
                     style={styles.input}
                     placeholder="Search"
                     placeholderTextColor="#9C9C9C"
-                    onChangeText={(text: string) => {props.onSearch(text)}}
+                    onChangeText={(text: string) => { props.onSearch(text) }}
                     value={props.searchValue}
                 />
             </View>
-            <Pressable style={styles.sortInput}>
-                <Sort width={20} height={20} color="#DC0A2D" />
-            </Pressable>
+            <View style={{ position: "relative" }}>
+                <Pressable
+                    style={styles.sortInput}
+                    onPress={() => props.setIsSorting(!props.isSorting)}
+                >
+                    <Sort width={20} height={20} color="#DC0A2D" />
+                </Pressable>
+                <SortPopup
+                    visible={props.isSorting}
+                    sortBy={props.sortBy}
+                    onChange={(value) => {
+                        props.setSortBy(value);
+                        props.setIsSorting(false);
+                    }}
+                />
+            </View>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
