@@ -1,8 +1,13 @@
 import {StyleSheet, View, TextInput, Pressable} from "react-native";
 import Search from "../../assets/Search.svg";
 import Sort from "../../assets/Sort.svg";
+import {useState} from "react";
 
-export default function SearchBar() {
+export default function SearchBar(props: {
+    searchValue: string,
+    onSearch: (value: string) => void;
+}) {
+
     return (
         <View style={styles.container}>
             <View style={styles.searchInput}>
@@ -11,6 +16,8 @@ export default function SearchBar() {
                     style={styles.input}
                     placeholder="Search"
                     placeholderTextColor="#9C9C9C"
+                    onChangeText={(text: string) => {props.onSearch(text)}}
+                    value={props.searchValue}
                 />
             </View>
             <Pressable style={styles.sortInput}>

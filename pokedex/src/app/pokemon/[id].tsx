@@ -1,10 +1,12 @@
-import { View, StyleSheet, Text, Image } from "react-native"
+import {View, StyleSheet, Text, Image, Pressable} from "react-native"
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from "react";
 import { getPokemon } from "@/api/pokemon/getPokemon";
 import { PokemonType } from "@/types/PokemonType";
 import DetailHeader from "@/components/DetailHeader";
 import PokemonDetail from "@/components/PokemonDetail";
+import { Link } from 'expo-router';
+import Back from "@/assets/Back.svg"
 
 export default function DetailPage () {
     const { id } = useLocalSearchParams();
@@ -52,12 +54,30 @@ export default function DetailPage () {
         pokemonData ?
             <View style={[ styles.container, { backgroundColor: color[pokemonData.types[0].type.name], }, ]}>
                 <DetailHeader id={id} pokemonName={capitalizeFirstLetter(pokemonData?.name)}/>
-                <Image
-                    source={{ uri: pokemonData.sprites.other["official-artwork"].front_default }}
-                    alt={pokemonData.name}
-                    style={styles.pokemonImage}
-                    resizeMode="contain"
-                />
+                <View style={styles.align}>
+                    {
+                        Number(id) !== 1 ?
+                        <Link href={{
+                            pathname: "/pokemon/[id]",
+                            params: { id: (Number(id) - 1) },
+                        }}>
+                            <Back width={24} height={24}/>
+                        </Link> : <View/>
+                    }
+                    <Image
+                        source={{ uri: pokemonData.sprites.other["official-artwork"].front_default }}
+                        alt={pokemonData.name}
+                        style={styles.pokemonImage}
+                        resizeMode="contain"
+                    />
+                    <Link href={{
+                        pathname: "/pokemon/[id]",
+                        params: { id: (Number(id) + 1) },
+                    }}>
+                        <Back width={24} height={24} style={{ transform: [{ rotateY: '180deg' }] }}
+                        />
+                    </Link>
+                </View>
                 <PokemonDetail pokemonData={pokemonData} accentColor={color[pokemonData.types[0].type.name]} />
             </View> : <Text>Loading....</Text>
     )
@@ -73,5 +93,12 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         zIndex: 10,
         elevation: 10
+    },
+    align: {
+        display: "flex",
+        justifyContent: "space-between",
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 12
     }
 })

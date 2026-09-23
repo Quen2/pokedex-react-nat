@@ -5,6 +5,7 @@ import Size from "../../assets/Size.svg"
 import Poids from "../../assets/Poids.svg"
 import {getPokemonDescription} from "@/api/pokemon/getPokemon";
 import {useState, useEffect} from "react";
+import StatBar from "@/components/StatBar"
 
 const TYPE_COLORS: Record<string, string> = {
     grass: "#74CB48",
@@ -110,21 +111,11 @@ export default function PokemonDetail(props: { pokemonData: PokemonType; accentC
             <Text style={[styles.sectionTitle, { color: accentColor, marginTop: 24 }]}>Base Stats</Text>
 
             <View style={styles.statsBlock}>
-                {pokemonData.stats.map((s) => (
+                {pokemonData.stats.map((s, index ) => (
                     <View key={s.stat.name} style={styles.statRow}>
                         <Text style={styles.statLabel}>{STAT_LABELS[s.stat.name] ?? s.stat.name}</Text>
                         <Text style={styles.statValue}>{String(s.base_stat).padStart(3, "0")}</Text>
-                        <View style={styles.barBackground}>
-                            <View
-                                style={[
-                                    styles.barFill,
-                                    {
-                                        width: `${Math.min((s.base_stat / maxStat) * 100, 100)}%`,
-                                        backgroundColor: accentColor,
-                                    },
-                                ]}
-                            />
-                        </View>
+                        <StatBar value={s.base_stat} maxStat={maxStat}  color={accentColor} delay={index * 100}/>
                     </View>
                 ))}
             </View>
@@ -209,17 +200,6 @@ const styles = StyleSheet.create({
         width: 32,
         fontSize: 12,
         color: "#444",
-    },
-    barBackground: {
-        flex: 1,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: "#eee",
-        overflow: "hidden",
-    },
-    barFill: {
-        height: "100%",
-        borderRadius: 3,
     },
     align: {
         display: "flex",

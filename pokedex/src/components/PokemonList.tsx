@@ -1,12 +1,15 @@
 import {View, StyleSheet, FlatList} from "react-native";
-import {useState, useEffect} from "react";
+import {useState, useEffect, useMemo} from "react";
 import { getPokemons } from "@/api/pokemon/getPokemon";
 import PokemonCard from "@/components/PokemonCard";
 import { PokemonListType } from "@/types/PokemonListType";
 import { Link } from "expo-router";
 
-export default function PokemonList() {
+export default function PokemonList(props: {
+    searchValue: string
+}) {
     const [pokemonList, setPokemonList] = useState<PokemonListType[]>([]);
+    const [allPokemonsList, setAllPokemonsList] = useState<PokemonListType[]>([]);
     const [offset, setOffset] = useState(0)
     const limit: number = 20
 
@@ -31,14 +34,37 @@ export default function PokemonList() {
         loadPokemons();
     }, [offset, limit]);
 
+    useEffect(() => {
+        async function loadAllPokemons () {
+            try {
+                const data = await getPokemons(0, 2000)
+                setAllPokemonsList(data.results);
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        loadAllPokemons();
+    }, []);
+
+    const displayedList = useMemo(() => {
+        if (props.searchValue.trim() === "") {
+            return pokemonList;
+        }
+        return allPokemonsList.filter(p =>
+            p.name.toLowerCase().includes(props.searchValue.trim().toLowerCase())
+        );
+    }, [props.searchValue, pokemonList]);
+
     return (
         <View style={styles.container}>
             <FlatList
                 contentContainerStyle={styles.pokemonContainer}
+                columnWrapperStyle={styles.row}
                 onEndReached={updatePagination}
                 onEndReachedThreshold={0.5}
-                data={pokemonList}
-                keyExtractor={(item) => getIdFromUrl(item.url)}
+                data={displayedList}
+                numColumns={3}
+                keyExtractor={(item) => "_" + getIdFromUrl(item.url)}
                 renderItem={({ item }) => (
                     <Link href={{
                         pathname: "/pokemon/[id]",
@@ -61,11 +87,10 @@ const styles = StyleSheet.create({
         borderRadius: 8
     },
     pokemonContainer: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "space-around",
-        alignContent: "center",
         gap: 6,
-        alignItems: "center",
+    },
+    row: {
+        justifyContent: "space-around",
+        gap: 6,
     }
 })

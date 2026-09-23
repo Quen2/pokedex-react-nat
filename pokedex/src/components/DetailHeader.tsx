@@ -1,6 +1,7 @@
 import {StyleSheet, View, Text, Pressable} from "react-native"
 import Back from "../../assets/Back.svg"
 import Pokeball from "../../assets/Pokeball.svg"
+import {Link} from "expo-router";
 
 export default function DetailHeader (props: {
     pokemonName: string,
@@ -10,12 +11,14 @@ export default function DetailHeader (props: {
     return (
         <View style={styles.container}>
             <View style={styles.nameContainer}>
-                <Pressable>
-                    <Back width={20} height={20}/>
-                </Pressable>
+                <Link href={{
+                    pathname: "/"
+                }}>
+                    <Back width={24} height={24}/>
+                </Link>
                 <Text style={styles.name}>{props.pokemonName}</Text>
             </View>
-            <Text style={styles.name}>{props.id}</Text>
+            <Text style={styles.name}>#{String(props.id).padStart(3, "0")}</Text>
             <Pokeball style={styles.pokeball} width={200} height={200} color={"EFEFEF"}/>
         </View>
     )

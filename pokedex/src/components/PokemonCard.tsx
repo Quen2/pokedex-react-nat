@@ -28,7 +28,7 @@ export default function PokemonCard(props: {
 
     return (
         <View style={styles.container}>
-            <Text>#{props.id}</Text>
+            <Text style={styles.name}>#{String(props.id).padStart(3, "0")}</Text>
             <Image
                 source={{ uri: pokemonData?.sprites.other["official-artwork"].front_default }}
                 alt={props.pokemonList?.name}
@@ -56,5 +56,13 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontFamily: "Poppins-Regular",
         color: "#666666"
+    },
+    name: {
+        fontFamily: "Poppins-Regular",
+        fontSize: 8,
+        color: "#666666",
+        textAlign: "right",
+        width: "100%",
+        paddingRight: 6
     }
 })
