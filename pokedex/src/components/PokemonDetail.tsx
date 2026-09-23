@@ -6,6 +6,7 @@ import Poids from "../../assets/Poids.svg"
 import {getPokemonDescription} from "@/api/pokemon/getPokemon";
 import {useState, useEffect} from "react";
 import StatBar from "@/components/StatBar"
+import { useAudioPlayer } from "expo-audio";
 
 const TYPE_COLORS: Record<string, string> = {
     grass: "#74CB48",
@@ -45,6 +46,7 @@ function capitalizeFirstLetter(name: string | undefined): string {
 export default function PokemonDetail(props: { pokemonData: PokemonType; accentColor: string }) {
     const { pokemonData, accentColor } = props;
     const [ pokemonText, setPokemonText ] = useState<PokemonText | null>(null)
+    const player = useAudioPlayer(pokemonData.cries.latest);
 
     useEffect(() => {
         async function loadPokemonText () {
@@ -56,6 +58,7 @@ export default function PokemonDetail(props: { pokemonData: PokemonType; accentC
             }
         }
         loadPokemonText();
+        player.play();
     }, []);
 
     const maxStat = 250;

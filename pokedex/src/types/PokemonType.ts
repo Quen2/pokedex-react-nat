@@ -39,5 +39,8 @@ export type PokemonType = {
                 front_default: string
             }
         }
+    },
+    cries: {
+        latest: string
     }
 }
